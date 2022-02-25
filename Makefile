@@ -1,9 +1,9 @@
-TARGET = vr
+TARGET = vr2017
 
 CC = gcc
 
 CFLAGS = -c -Wall -Werror=format-security
-SRC = vr.c
+SRC = vr2017.c
 OBJ = $(SRC:.c=.o)
 
 all:$(TARGET)
@@ -16,4 +16,4 @@ $(TARGET):$(OBJ)
 .c.o:
 	 $(CC) $(CFLAGS) $<
 clean:
-	rm -f *.o *.obj
+	rm -f *.o *.obj $(TARGET)
