@@ -2,7 +2,7 @@ TARGET = vr2017
 
 CC = gcc
 
-CFLAGS = -c -Wall -Werror=format-security
+CFLAGS = -c -Wall -Wvla -Werror -g -std=gnu11 -Werror=format-security
 SRC = vr2017.c
 OBJ = $(SRC:.c=.o)
 
