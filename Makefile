@@ -15,5 +15,9 @@ $(TARGET):$(OBJ)
 
 .c.o:
 	 $(CC) $(CFLAGS) $<
+
+test:
+	bash test.sh
+
 clean:
 	rm -f *.o *.obj $(TARGET)
