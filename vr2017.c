@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
       chunk[valueCount] = fgetc(file);
       if (chunk[valueCount] == delimiter[delimiterCount]) {
         if (delimiterCount++ == 3 || (feof(file) && packetCount != 0)) {
-          printf("Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count,(double)sums[2]/(double)valid_count);
+          printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count,(double)sums[2]/(double)valid_count);
           chunkCount++;
           valueCount = 0;
           valid_count = 1;
@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
         printf("Chunk: %d at offset: %d\n", chunkCount, offset);
         offset+=valueCount;
         printf("    Packet: %d\n", packetCount++);
-        printf("         Data before swizzle -> B0: %d, B1: %d, B2: %d\n",chunk[0], chunk[1], chunk[2]);
+        printf("        Data before swizzle -> B0: %d, B1: %d, B2: %d\n",chunk[0], chunk[1], chunk[2]);
 
         char *swizzle;
         int swizzledChunk[4] = { 0 };
