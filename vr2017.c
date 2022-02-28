@@ -34,7 +34,7 @@ int paritySolver(int decValue[], int size) {
     int mod = 0;
     for (int entry = 0; entry < size; entry++) { //replace with arraylength
       if (decValue[entry] & 1 << (bit-1)) {
-        mod = (++mod)%2;
+        mod = (mod + 1)%2;
       }
     }
   checksum += mod * 1 << (bit-1);
