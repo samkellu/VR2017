@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
       }
     }
     int checksum = paritySolver(decValue, 3);
-    printf("Checksum: %d\n\n", checksum);
+    printf("Checksum is: %d\n\n", checksum);
 
     int delimiter[] = {decValue[0], decValue[1], decValue[2], checksum};
     int delimiterCount = 0;
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
       chunk[valueCount] = fgetc(file);
       if (chunk[valueCount] == delimiter[delimiterCount]) {
         if (delimiterCount++ == 3 || (feof(file) && packetCount != 0)) {
-          printf("Chunk Average X. %.2f, Average Y. %.2f, Average Z. %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count,(double)sums[2]/(double)valid_count);
+          printf("Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count,(double)sums[2]/(double)valid_count);
           chunkCount++;
           valueCount = 0;
           valid_count = 1;
@@ -99,8 +99,8 @@ int main(int argc, char **argv) {
         valueCount = 0;
         printf("Chunk: %d at offset: %d\n", chunkCount, offset);
         offset+=valueCount;
-        printf("  Packet: %d\n", packetCount++);
-        printf("    Data before swizzle -> B0: %d, B1: %d, B2: %d\n",chunk[0], chunk[1], chunk[2]);
+        printf("    Packet: %d\n", packetCount++);
+        printf("       Data before swizzle -> B0: %d, B1: %d, B2: %d\n",chunk[0], chunk[1], chunk[2]);
 
         char *swizzle;
         int swizzledChunk[4] = { 0 };
@@ -148,8 +148,8 @@ int main(int argc, char **argv) {
                 continue;
       	}
 
-      	printf("    Swizzle: %s\n", swizzle);
-        printf("    Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzledChunk[0],swizzledChunk[1], swizzledChunk[2]);
+      	printf("       Swizzle: %s\n", swizzle);
+        printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzledChunk[0],swizzledChunk[1], swizzledChunk[2]);
         if (paritySolver(swizzledChunk, 4) != chunk[4]) {
           printf("Parity byte does not match. Skipping packet.");
           continue;
