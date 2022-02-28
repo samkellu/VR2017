@@ -14,26 +14,26 @@ int hexToDec(char *term) {
   char byte2 = toupper(term[3]);
 
   if (term[0] == '0' && term[1] == 'x' && byte1 >= '0' && byte1 <= 'F' && byte2 >= '0' && byte2 <= 'F' && strlen(term) == 4) {
-    int firstValue = byte1 - '0';
-    int secondValue = byte2 - '0';
-    if (firstValue > 9) {
-      firstValue -= 7;
+    int first_value = byte1 - '0';
+    int second_value = byte2 - '0';
+    if (first_value > 9) {
+      first_value -= 7;
     }
-    if (secondValue > 9) {
-      secondValue -= 7;
+    if (second_value > 9) {
+      second_value -= 7;
     }
-    return firstValue*16 + secondValue;
+    return first_value*16 + second_value;
   } else {
     return -1;
   }
 }
 
-int paritySolver(int decValue[], int size) {
+int paritySolver(int dec_value[], int size) {
   int checksum = 0;
   for (int bit = 8; bit > 0; bit--) {
     int mod = 0;
     for (int entry = 0; entry < size; entry++) { //replace with arraylength
-      if (decValue[entry] & 1 << (bit-1)) {
+      if (dec_value[entry] & 1 << (bit-1)) {
         mod = (mod + 1)%2;
       }
     }
@@ -55,24 +55,24 @@ int main(int argc, char **argv) {
       return -1;
     }
 
-    int decValue[3];
+    int dec_value[3];
     for (int arg = 2; arg < 5; arg++) {
-       decValue[arg-2] = hexToDec(argv[arg]);
-      if (decValue[arg-2] != -1) {
-        printf("Delimiter byte %d is: %d\n", arg-2, decValue[arg-2]);
+       dec_value[arg-2] = hexToDec(argv[arg]);
+      if (dec_value[arg-2] != -1) {
+        printf("Delimiter byte %d is: %d\n", arg-2, dec_value[arg-2]);
       } else {
         printf("Invalid delimiter byte.\n");
         return -1;
       }
     }
-    int checksum = paritySolver(decValue, 3);
+    int checksum = paritySolver(dec_value, 3);
     printf("Checksum is: %d\n\n", checksum);
 
-    int delimiter[] = {decValue[0], decValue[1], decValue[2], checksum};
-    int delimiterCount = 0;
-    int valueCount = 0;
-    int packetCount = 0;
-    int chunkCount = 0;
+    int delimiter[] = {dec_value[0], dec_value[1], dec_value[2], checksum};
+    int delimiter_count = 0;
+    int value_count = 0;
+    int pacet_count = 0;
+    int chunk_count = 0;
     int offset = 0;
     unsigned char chunk[5];
     unsigned char last_valid_chunk[3];
@@ -81,67 +81,67 @@ int main(int argc, char **argv) {
     char coords[] = {'X', 'Y', 'Z'};
 
     while(!feof(file)) {
-      chunk[valueCount] = fgetc(file);
-      if (chunk[valueCount] == delimiter[delimiterCount]) {
-        if (delimiterCount++ == 3 || (feof(file) && packetCount != 0)) {
+      chunk[value_count] = fgetc(file);
+      if (chunk[value_count] == delimiter[delimiter_count]) {
+        if (delimiter_count++ == 3 || (feof(file) && pacet_count != 0)) {
           printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count,(double)sums[2]/(double)valid_count);
-          chunkCount++;
-          valueCount = 0;
+          chunk_count++;
+          value_count = 0;
           valid_count = 1;
-          packetCount = 0;
-          delimiterCount = 0;
+          pacet_count = 0;
+          delimiter_count = 0;
           continue;
         }
       } else {
-        delimiterCount = 0;
+        delimiter_count = 0;
       }
-      if (valueCount++ == 4) {
-        valueCount = 0;
-        printf("Chunk: %d at offset: %d\n", chunkCount, offset);
-        offset+=valueCount;
-        printf("    Packet: %d\n", packetCount++);
+      if (value_count++ == 4) {
+        value_count = 0;
+        printf("Chunk: %d at offset: %d\n", chunk_count, offset);
+        offset+=value_count;
+        printf("    Packet: %d\n", pacet_count++);
         printf("        Data before swizzle -> B0: %d, B1: %d, B2: %d\n",chunk[0], chunk[1], chunk[2]);
 
         char *swizzle;
-        int swizzledChunk[4] = { 0 };
-        swizzledChunk[3] = chunk[3];
+        int swizzled_chunk[4] = { 0 };
+        swizzled_chunk[3] = chunk[3];
 
       	switch(chunk[3]) {
       	      case 1:
                 swizzle = "XYZ";
-      		      swizzledChunk[0] = chunk[0];
-                swizzledChunk[1] = chunk[1];
-                swizzledChunk[2] = chunk[2];
+      		      swizzled_chunk[0] = chunk[0];
+                swizzled_chunk[1] = chunk[1];
+                swizzled_chunk[2] = chunk[2];
       		      break;
       	      case 2:
                 swizzle = "XZY";
-                swizzledChunk[0] = chunk[0];
-                swizzledChunk[2] = chunk[1];
-                swizzledChunk[1] = chunk[2];
+                swizzled_chunk[0] = chunk[0];
+                swizzled_chunk[2] = chunk[1];
+                swizzled_chunk[1] = chunk[2];
       		      break;
       	      case 3:
                 swizzle = "YXZ";
-                swizzledChunk[1] = chunk[0];
-                swizzledChunk[0] = chunk[1];
-                swizzledChunk[2] = chunk[2];
+                swizzled_chunk[1] = chunk[0];
+                swizzled_chunk[0] = chunk[1];
+                swizzled_chunk[2] = chunk[2];
                 break;
       	      case 4:
                 swizzle = "YZX";
-                swizzledChunk[1] = chunk[0];
-                swizzledChunk[2] = chunk[1];
-                swizzledChunk[0] = chunk[2];
+                swizzled_chunk[1] = chunk[0];
+                swizzled_chunk[2] = chunk[1];
+                swizzled_chunk[0] = chunk[2];
       		      break;
               case 5:
                 swizzle = "ZXY";
-                swizzledChunk[2] = chunk[0];
-                swizzledChunk[0] = chunk[1];
-                swizzledChunk[1] = chunk[2];
+                swizzled_chunk[2] = chunk[0];
+                swizzled_chunk[0] = chunk[1];
+                swizzled_chunk[1] = chunk[2];
       		      break;
               case 6:
                 swizzle = "ZYX";
-                swizzledChunk[2] = chunk[0];
-                swizzledChunk[1] = chunk[1];
-                swizzledChunk[0] = chunk[2];
+                swizzled_chunk[2] = chunk[0];
+                swizzled_chunk[1] = chunk[1];
+                swizzled_chunk[0] = chunk[2];
       		      break;
               default:
                 printf("Invalid Swizzle Byte.\n");  //check if this works at all
@@ -149,23 +149,23 @@ int main(int argc, char **argv) {
       	}
 
       	printf("        Swizzle: %s\n", swizzle);
-        printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzledChunk[0],swizzledChunk[1], swizzledChunk[2]);
-        if (paritySolver(swizzledChunk, 4) != chunk[4]) {
+        printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzled_chunk[0],swizzled_chunk[1], swizzled_chunk[2]);
+        if (paritySolver(swizzled_chunk, 4) != chunk[4]) {
           printf("Parity byte does not match. Skipping packet.");
           continue;
         }
         for (int coord = 0; coord < 3; coord++) {
-          if (packetCount == 1) {
+          if (pacet_count == 1) {
             sums[coord] = 0;
-            last_valid_chunk[coord] = swizzledChunk[coord];
+            last_valid_chunk[coord] = swizzled_chunk[coord];
             sums[coord] += last_valid_chunk[coord];
             continue;
           }
-          if (abs(swizzledChunk[coord] - last_valid_chunk[coord]) > 25) {
-            printf("    Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzledChunk[coord], coords[coord], last_valid_chunk[coord], abs(last_valid_chunk[coord] - swizzledChunk[coord]));
+          if (abs(swizzled_chunk[coord] - last_valid_chunk[coord]) > 25) {
+            printf("    Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzled_chunk[coord], coords[coord], last_valid_chunk[coord], abs(last_valid_chunk[coord] - swizzled_chunk[coord]));
             break;
           } else {
-            last_valid_chunk[coord] = swizzledChunk[coord];
+            last_valid_chunk[coord] = swizzled_chunk[coord];
             sums[coord] += last_valid_chunk[coord];
             if (coord == 2) {
               valid_count++;
