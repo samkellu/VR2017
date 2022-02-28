@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
         printf("Chunk: %d at offset: %d\n", chunkCount, offset);
         offset+=valueCount;
         printf("    Packet: %d\n", packetCount++);
-        printf("       Data before swizzle -> B0: %d, B1: %d, B2: %d\n",chunk[0], chunk[1], chunk[2]);
+        printf("         Data before swizzle -> B0: %d, B1: %d, B2: %d\n",chunk[0], chunk[1], chunk[2]);
 
         char *swizzle;
         int swizzledChunk[4] = { 0 };
@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
                 continue;
       	}
 
-      	printf("       Swizzle: %s\n", swizzle);
+      	printf("        Swizzle: %s\n", swizzle);
         printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzledChunk[0],swizzledChunk[1], swizzledChunk[2]);
         if (paritySolver(swizzledChunk, 4) != chunk[4]) {
           printf("Parity byte does not match. Skipping packet.");
