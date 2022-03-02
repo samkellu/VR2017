@@ -28,16 +28,15 @@ int hexToDec(char *term) {
     }
     //returns the decimal value if the operation is a success
     return first_value*16 + second_value;
-  } else {
-    //returns a -1 (error) if the value is invalid
-    return -1;
   }
+  //returns a -1 (error) if the value is invalid
+  return -1;
 }
 
 //Calculates the checksum of an array of numbers
 int paritySolver(int dec_value[], int size) {
   int checksum = 0;
-  //Counts the number of (1) bits in each column of the set of numbers with a 
+  //Counts the number of (1) bits in each column of the set of numbers with a
   //bit mask, then finds if there is an odd or even number of each. In the output
   //the a one is placed in each column where there is an odd  number of 1s present.
   for (int bit = 8; bit > 0; bit--) {
@@ -67,7 +66,7 @@ int main(int argc, char **argv) {
     return -1;
   }
 
- //Converting all delimiter arguments into integers 
+ //Converting all delimiter arguments into integers
   int dec_value[3];
   for (int arg = 2; arg < 5; arg++) {
      dec_value[arg-2] = hexToDec(argv[arg]);
@@ -90,7 +89,7 @@ int main(int argc, char **argv) {
   //Counts the number of values processed since the start of the packet
   int value_count = 0;
   //Counts the  number of  packets since the start of the chunk
-  int pacet_count = 0;
+  int packet_count = 0;
   //Counts the number of chunks
   int chunk_count = 0;
   //The current offset in memory
@@ -100,7 +99,7 @@ int main(int argc, char **argv) {
   //Stores coordinate data of the most recent valid chunk
   unsigned char last_valid_chunk[3];
   int sums[3] = { 0 };
-  //Stores the sum of each coordinate's values in each chunk 
+  //Stores the sum of each coordinate's values in each chunk
   int valid_count = 1;
   //Stores the names of each coordinate for display  purposes
   char coords[] = {'X', 'Y', 'Z'};
@@ -112,15 +111,15 @@ int main(int argc, char **argv) {
     //Checks if the value is the correct part of the delimiter
     if (chunk[value_count] == delimiter[delimiter_count]) {
       	//Begins a new chunk if the delimiter is completed
-	if (delimiter_count++ == 3 || (feof(file) && pacet_count != 0)) {
-        printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", 
+	if (delimiter_count++ == 3 || (feof(file) && packet_count != 0)) {
+        printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n",
 	      (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count,
 	      (double)sums[2]/(double)valid_count);
-	//Resets or increments necessary values for the next chunk
+	       //Resets or increments necessary values for the next chunk
         chunk_count++;
         value_count = 0;
         valid_count = 1;
-        pacet_count = 0;
+        packet_count = 0;
         delimiter_count = 0;
         continue;
       }
@@ -129,11 +128,13 @@ int main(int argc, char **argv) {
     }
     //Checks if the current value is the last of the packet
     if (value_count++ == 4) {
-      value_count = 0;
       //Prints necessary information and starts the next packet
-      printf("Chunk: %d at offset: %d\n", chunk_count, offset);
+      if (packet_count == 0) {
+        printf("Chunk: %d at offset: %d\n", chunk_count, offset);
+      }
       offset+=value_count;
-      printf("    Packet: %d\n", pacet_count++);
+      value_count = 0;
+      printf("    Packet: %d\n", packet_count++);
       printf("        Data before swizzle -> B0: %d, B1: %d, B2: %d\n",chunk[0], chunk[1], chunk[2]);
 
       //Stores the string representation of the swizzle order
@@ -180,7 +181,7 @@ int main(int argc, char **argv) {
               swizzled_chunk[0] = chunk[2];
     		      break;
             default:
-              printf("Invalid Swizzle Byte.\n");  //check if this works at all
+              printf("Invalid Swizzle Byte. Ignoring packet.\n");
               continue;
     	}
 
@@ -188,21 +189,21 @@ int main(int argc, char **argv) {
       printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzled_chunk[0],swizzled_chunk[1], swizzled_chunk[2]);
       //Finds and checks the checksum of the swizzled bytes
       if (paritySolver(swizzled_chunk, 4) != chunk[4]) {
-        printf("Parity byte does not match. Skipping packet.");
+        printf("        Parity byte does not match. Skipping packet.\n");
         continue;
       }
-      //Checks the validity of the current packet against the previous valid packet in the chunk 
+      //Checks the validity of the current packet against the previous valid packet in the chunk
       for (int coord = 0; coord < 3; coord++) {
-	//Sets the default most recent valid chunk in a new packet
-        if (pacet_count == 1) {
+	      //Sets the default most recent valid chunk in a new packet
+        if (packet_count == 1) {
           sums[coord] = 0;
           last_valid_chunk[coord] = swizzled_chunk[coord];
           sums[coord] += last_valid_chunk[coord];
           continue;
         }
-	//Checks the validity of the current packet against the values in the most recent valid packet.
-	//If it is invalid, the packet is skipped, otherwise it is set to be the new most recent valid 
-	//packet
+	       //Checks the validity of the current packet against the values in the most recent valid packet.
+	        //If it is invalid, the packet is skipped, otherwise it is set to be the new most recent valid
+	         //packet
         if (abs(swizzled_chunk[coord] - last_valid_chunk[coord]) > 25) {
           printf("    Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzled_chunk[coord], coords[coord], last_valid_chunk[coord], abs(last_valid_chunk[coord] - swizzled_chunk[coord]));
           break;
