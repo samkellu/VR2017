@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 	      (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count,
 	      (double)sums[2]/(double)valid_count);
 	      //Resets or increments necessary values for the next chunk
-        offset += 4
+        offset += 4;
         chunk_count++;
         value_count = 0;
         valid_count = 1;
