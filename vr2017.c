@@ -30,14 +30,14 @@ int main(int argc, char **argv) {
   //For the case in which an incorrect number of command line arguments have been entered.
   if (argc != 5) {
     printf("Incorrect number of command line arguments entered. Correct format: ./vr2017 <.bin file> <byte 1 of delimiter> <byte 2 of delimiter> <byte 3 of delimiter>\n");
-    return -1;
+    return 1;
   }
 
   //For the case in which the requested file is invalid
   FILE *file;
   if (!(file = fopen(argv[1], "rb"))) {
     printf("Invalid file.\n");
-    return -1;
+    return 1;
   }
 
  //Converting all delimiter arguments into integers
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     } else {
       //posts an error is the format is invalid
       printf("Delimiter byte %d is invalid.\n", arg-2);
-      return -1;
+      return 1;
     }
   }
 
@@ -194,4 +194,5 @@ int main(int argc, char **argv) {
     }
   }
   fclose(file);
+  return 0;
 }
