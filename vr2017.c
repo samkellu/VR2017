@@ -4,34 +4,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>  //check these are allowed!!!
 #include <string.h>
-#include <math.h>
-
-//Translates a string hexadecimal value to int and verifies its correctness
-int hexToDec(char *term) {
-  //Each of the two characters that make up the hex number
-  char byte1 = toupper(term[2]);
-  char byte2 = toupper(term[3]);
-
-  //Checks the formatting of the hexidecimal value to ensure it is valid
-  if (term[0] == '0' && term[1] == 'x' && byte1 >= '0' && byte1 <= 'F' && byte2 >= '0' && byte2 <= 'F' && strlen(term) == 4) {
-    //Using the ASCII values of the symbols, the hex value is converted into decimal form
-    int first_value = byte1 - '0';
-    int second_value = byte2 - '0';
-    //To account for the symbols that appear inbetween 9 and A in the ASCII encoding system
-    if (first_value > 9) {
-      first_value -= 7;
-    }
-    if (second_value > 9) {
-      second_value -= 7;
-    }
-    //returns the decimal value if the operation is a success
-    return first_value*16 + second_value;
-  }
-  //returns a -1 (error) if the value is invalid
-  return -1;
-}
+#include <ctype.h>
 
 //Calculates the checksum of an array of numbers
 int paritySolver(int dec_value[], int size) {
@@ -69,12 +43,13 @@ int main(int argc, char **argv) {
  //Converting all delimiter arguments into integers
   int dec_value[3];
   for (int arg = 2; arg < 5; arg++) {
-     dec_value[arg-2] = hexToDec(argv[arg]);
-    //Verifying all delimiters were correctly parsed
-    if (dec_value[arg-2] != -1) {
+    //Converts command line arguments to integers if they are of valid hexidecimal form
+    if (argv[arg][0] == '0' && argv[arg][1] == 'x' && isxdigit(argv[arg][2]) && isxdigit(argv[arg][3]) && strlen(argv[arg]) == 4) {
+      dec_value[arg-2] = (int)strtol(argv[arg],NULL, 0);
       printf("Delimiter byte %d is: %d\n", arg-2, dec_value[arg-2]);
     } else {
-      printf("Invalid delimiter byte.\n");
+      //posts an error is the format is invalid
+      printf("Delimiter byte %d is invalid.\n", arg-2);
       return -1;
     }
   }
