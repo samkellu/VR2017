@@ -195,6 +195,7 @@ int main(int argc, char **argv) {
           }
           printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
           offset_current_chunk = 0;
+          valid_count = 1;
         }
       }
     } else {
