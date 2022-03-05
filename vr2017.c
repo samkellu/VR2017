@@ -86,6 +86,9 @@ int main(int argc, char **argv) {
       memset(unprocessed_chunk, 0, 680*sizeof(int));
     }
     //Reads a value into the current chunk's array
+    if (offset_current_chunk == 638) {
+      printf("Overfull chunk. Ignoring...");
+    }
     unprocessed_chunk[offset_current_chunk] = fgetc(file);
     if (unprocessed_chunk[offset_current_chunk] == EOF) {
       unprocessed_chunk[offset_current_chunk] = '\0';
@@ -96,6 +99,9 @@ int main(int argc, char **argv) {
     if (feof(file) && offset_current_chunk == 0) {
       continue;
     }
+
+    ////////////////////////add overflow for chunk checking/////////////////////////
+
     //Checks if the value is the correct part of the delimiter
     if (unprocessed_chunk[offset-1] == delimiter[delimiter_count] || feof(file)) {
       	//Begins a new chunk if the delimiter is completed
