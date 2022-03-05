@@ -82,8 +82,8 @@ int main(int argc, char **argv) {
   //Reads and  processes data from the given file until an error occurs or the end of the file
   while(!feof(file)) {
     if (offset_current_chunk == 0) {
-      memset(chunk, 0, 640);
-      memset(unprocessed_chunk, 0, 680);
+      memset(chunk, 0, 640*sizeof(int));
+      memset(unprocessed_chunk, 0, 680*sizeof(int));
     }
     //Reads a value into the current chunk's array
     unprocessed_chunk[offset_current_chunk] = fgetc(file);
