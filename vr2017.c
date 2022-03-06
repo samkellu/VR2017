@@ -1,7 +1,6 @@
 /* Name: Sam Kelly
  * unikey: SKEL4720
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -73,6 +72,7 @@ int main(int argc, char **argv) {
   int unprocessed_chunk[680] = { '\0' };
   //Stores coordinate data of the most recent valid chunk
   int last_valid_chunk[3] = { '\0'};
+  //Stores the sum of each value for calculating the chunk averages
   int sums[3] = { 0 };
   //Stores the sum of each coordinate's values in each chunk
   int valid_count = 1;
