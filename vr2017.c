@@ -81,45 +81,51 @@ int main(int argc, char **argv) {
 
   //Reads and  processes data from the given file until an error occurs or the end of the file
   while(!feof(file)) {
+    //Resets arrays to store the current chunk
     if (offset_current_chunk == 0) {
       memset(chunk, 0, 640*sizeof(int));
       memset(unprocessed_chunk, 0, 680*sizeof(int));
     }
-    //Reads a value into the current chunk's array
-    if (offset_current_chunk == 638) {
+    //Check for the case in which the chunk is larger than the specified limit
+    if (offset_current_chunk == 638 && !feof(file)) {
       printf("Overfull chunk. Ignoring...");
     }
+    //Reads a value into the current chunk's array
     unprocessed_chunk[offset_current_chunk] = fgetc(file);
+    //Checks if the value read in is the EOF character and records it as such
     if (unprocessed_chunk[offset_current_chunk] == EOF) {
       unprocessed_chunk[offset_current_chunk] = '\0';
     } else {
+      //Increases the offset counters if not the EOF character
       offset++;
       offset_current_chunk++;
     }
+    //For the case where a delimiter appears as the last packet
     if (feof(file) && offset_current_chunk == 0) {
       continue;
     }
 
-    ////////////////////////add overflow for chunk checking/////////////////////////
-
     //Checks if the value is the correct part of the delimiter
     if (unprocessed_chunk[offset-1] == delimiter[delimiter_count] || feof(file)) {
-      	//Begins a new chunk if the delimiter is completed
+      //Begins a new chunk if the delimiter is completed
 	    if (delimiter_count++ == 3 || feof(file)) {
         delimiter_count = 0;
+        //Checks to see if the chunk is divisible into 5 byte packets, ignores the chunk if not and
+        //processes it if it is.
         if ((offset_current_chunk - 4) % 5 != 0 && !(feof(file) && offset_current_chunk % 5 != 5)) {
           printf("Invalid packet size. Ignoring chunk.\n");
         } else {
           int offset_counter = 0;
-          //offset_current_chunk = offset;
           printf("Chunk: %d at offset: %d\n", chunk_count, offset - offset_current_chunk);
           chunk_count++;
+          //Creates the processed array out of the initial collection of chunk data
           for (int packet = 0; packet < offset_current_chunk/5; packet++) {
             for (int value = 0; value < 5; value ++) {
               chunk[packet][value] = unprocessed_chunk[offset_counter++];
             }
             printf("    Packet: %d\n", packet);
             printf("        Data before swizzle -> B0: %d, B1: %d, B2: %d\n", chunk[packet][0], chunk[packet][1], chunk[packet][2]);
+            //Stores the string representation of the swizzle order
             char *swizzle;
             //Stores the new values of the chunk after it has been swizzled
             int swizzled_chunk[4] = { '\0' };
@@ -166,7 +172,6 @@ int main(int argc, char **argv) {
                     printf("Invalid Swizzle Byte. Ignoring packet.\n");
                     continue;
             }
-            //Stores the string representation of the swizzle order
             printf("        Swizzle: %s\n", swizzle);
             printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzled_chunk[0],swizzled_chunk[1], swizzled_chunk[2]);
 
@@ -200,6 +205,7 @@ int main(int argc, char **argv) {
             }
           }
           printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
+          //resets chunk parameters at the end of the chunk
           offset_current_chunk = 0;
           valid_count = 1;
         }
