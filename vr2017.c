@@ -28,27 +28,37 @@ int paritySolver(int dec_value[], int size) {
 int main(int argc, char **argv) {
   //For the case in which an incorrect number of command line arguments have been entered.
   if (argc != 5) {
-    printf("Incorrect number of command line arguments entered. Correct format: ./vr2017 <.bin file> <byte 1 of delimiter> <byte 2 of delimiter> <byte 3 of delimiter>\n");
+    printf("Error: Not enough command line arguments.\n");
     return 1;
   }
 
   //For the case in which the requested file is invalid
   FILE *file;
   if (!(file = fopen(argv[1], "rb"))) {
-    printf("Invalid file.\n");
+    printf("Error: File %s does not exist!\n", argv[1]);
     return 1;
   }
 
  //Converting all delimiter arguments into integers
   int dec_value[3];
   for (int arg = 2; arg < 5; arg++) {
+    //posts an error if the argument is of the wrong length
+     if (strlen(argv[arg]) != 4) {
+       printf("Error: Argument for delimiter byte %d is not of the correct length\n", arg-2);
+          return 1;
+     }
+     //posts an error if the argument does not begin with 0x
+     if (argv[arg][0] != '0' || argv[arg][1] != 'x') {
+       printf("Error: Argument for delimiter byte %d does not begin with 0x\n",arg-2);
+       return 1;
+     }
     //Converts command line arguments to integers if they are of valid hexidecimal form
-    if (argv[arg][0] == '0' && argv[arg][1] == 'x' && isxdigit(argv[arg][2]) && isxdigit(argv[arg][3]) && strlen(argv[arg]) == 4) {
+    if (isxdigit(argv[arg][2]) && isxdigit(argv[arg][3])) {
       dec_value[arg-2] = (int)strtol(argv[arg],NULL, 0);
       printf("Delimiter byte %d is: %d\n", arg-2, dec_value[arg-2]);
     } else {
       //posts an error is the format is invalid
-      printf("Delimiter byte %d is invalid.\n", arg-2);
+      printf("Error: Argument for delimiter byte %d is not a valid hex value\n", arg-2);
       return 1;
     }
   }
@@ -85,10 +95,11 @@ int main(int argc, char **argv) {
     if (offset_current_chunk == 0) {
       memset(chunk, 0, 640*sizeof(int));
       memset(unprocessed_chunk, 0, 680*sizeof(int));
+      memset(last_valid_chunk, '\0',3*sizeof(int));
     }
     //Check for the case in which the chunk is larger than the specified limit
-    if (offset_current_chunk == 638 && !feof(file)) {
-      printf("Overfull chunk. Ignoring...");
+    if (offset_current_chunk == 639) {
+      printf("Error: Chunk size exceeds the maximum allowable chunk size of 640 bytes.\n");
     }
     //Reads a value into the current chunk's array
     unprocessed_chunk[offset_current_chunk] = fgetc(file);
@@ -113,7 +124,7 @@ int main(int argc, char **argv) {
         //Checks to see if the chunk is divisible into 5 byte packets, ignores the chunk if not and
         //processes it if it is.
         if ((offset_current_chunk - 4) % 5 != 0 && !(feof(file) && offset_current_chunk % 5 != 5)) {
-          printf("Invalid packet size. Ignoring chunk.\n");
+          printf("Error: Chunk must be divisible by 5 bytes.\n");
         } else {
           int offset_counter = 0;
           printf("Chunk: %d at offset: %d\n", chunk_count, offset - offset_current_chunk);
@@ -204,7 +215,11 @@ int main(int argc, char **argv) {
               }
             }
           }
-          printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
+          if (last_valid_chunk == NULL) {
+            printf("    No valid packets were found for this chunk.");
+          } else {
+            printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
+          }
           //resets chunk parameters at the end of the chunk
           offset_current_chunk = 0;
           valid_count = 1;
