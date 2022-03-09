@@ -125,6 +125,7 @@ int main(int argc, char **argv) {
     }
 
     //Checks if the value is the correct part of the delimiter
+    printf("%d, %d\n", unprocessed_chunk[offset-1], delimiter[delimiter_count]);
     if (unprocessed_chunk[offset-1] == delimiter[delimiter_count] || feof(file)) {
       //Begins a new chunk if the delimiter is completed
 	    if (delimiter_count++ == 3 || feof(file)) {
