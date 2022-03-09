@@ -216,7 +216,6 @@ int main(int argc, char **argv) {
             //Checks the validity of the current packet against the values in the most recent valid packet.
             //If it is invalid, the packet is skipped, otherwise it is set to be the new most recent valid
             //packet
-            printf("%d, %d\n", last_valid_packet[coord], swizzled_packet[coord]);
             if (abs(swizzled_packet[coord] - last_valid_packet[coord]) > 25) {
               printf("        Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzled_packet[coord], coords[coord], last_valid_packet[coord], abs(last_valid_packet[coord] - swizzled_packet[coord]));
               break;
