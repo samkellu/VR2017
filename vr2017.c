@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
         printf("Chunk: %d at offset: %d\n", chunk_count, offset - offset_current_chunk);
         chunk_count++;
         //Check for the case in which the chunk is larger than the specified limit
-        if (offset_current_chunk == 639) {
+        if (offset_current_chunk == 638) {
           printf("Error: Chunk size exceeds the maximum allowable chunk size of 640 bytes.\n");
           offset_current_chunk = 0;
           continue;
