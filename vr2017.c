@@ -96,19 +96,11 @@ int main(int argc, char **argv) {
 
   //Reads and  processes data from the given file until an error occurs or the end of the file
   while(!feof(file)) {
-    offset_current_chunk = 0;
-    printf("Chunk: %d at offset: %d\n", chunk_count, offset - offset_current_chunk);
-    chunk_count++;
     //Resets arrays to store the current chunk
     if (offset_current_chunk == 0) {
       memset(chunk, 0, 640*sizeof(int));
       memset(unprocessed_chunk, 0, 680*sizeof(int));
       memset(last_valid_packet, '\0',3*sizeof(int));
-    }
-    //Check for the case in which the chunk is larger than the specified limit
-    if (offset_current_chunk == 639) {
-      printf("Error: Chunk size exceeds the maximum allowable chunk size of 640 bytes.\n");
-      continue;
     }
     //Reads a value into the current chunk's array
     unprocessed_chunk[offset_current_chunk] = fgetc(file);
@@ -130,11 +122,20 @@ int main(int argc, char **argv) {
       //Begins a new chunk if the delimiter is completed
 	    if (delimiter_count++ == 3 || feof(file)) {
         delimiter_count = 0;
+        int offset_counter = 0;
+        printf("Chunk: %d at offset: %d\n", chunk_count, offset - offset_current_chunk);
+        chunk_count++;
         //Checks to see if the chunk is divisible into 5 byte packets, ignores the chunk if not and
         //processes it if it is.
-        int offset_counter = 0;
         if ((offset_current_chunk - 4) % 5 != 0 && !(feof(file) && offset_current_chunk % 5 != 5)) {
           printf("Error: Chunk must be divisible by 5 bytes.\n");
+          offset_current_chunk = 0;
+          continue;
+        }
+        //Check for the case in which the chunk is larger than the specified limit
+        if (offset_current_chunk == 639) {
+          printf("Error: Chunk size exceeds the maximum allowable chunk size of 640 bytes.\n");
+          offset_current_chunk = 0;
           continue;
         }
         //Creates the processed array out of the initial collection of chunk data
