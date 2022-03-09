@@ -109,8 +109,7 @@ int main(int argc, char **argv) {
       printf("Chunk: %d at offset: %d\n", chunk_count, offset - offset_current_chunk);
       chunk_count++;
       printf("Error: Chunk size exceeds the maximum allowable chunk size of 640 bytes.\n\n");
-      offset_current_chunk = 0;
-      continue;
+      return 1;
     }
     //Checks if the value read in is the EOF character and records it as such
     if (unprocessed_chunk[offset_current_chunk] == EOF) {
