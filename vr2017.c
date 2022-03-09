@@ -90,11 +90,9 @@ int main(int argc, char **argv) {
   //Stores the sum of each value for calculating the chunk averages
   int sums[3] = { 0 };
   //Stores the sum of each coordinate's values in each chunk
-  int valid_count = 1;
+  int valid_count = 0;
   //Stores the names of each coordinate for display  purposes
   char coords[] = {'X', 'Y', 'Z'};
-  //flag for if there was at least one valid packet in this chunks
-  bool valid_packet_found
 
   //Reads and  processes data from the given file until an error occurs or the end of the file
   while(!feof(file)) {
@@ -206,7 +204,7 @@ int main(int argc, char **argv) {
                 sums[coord] = 0;
                 last_valid_packet[coord] = swizzled_chunk[coord];
                 sums[coord] += last_valid_packet[coord];
-                valid_packet_found = true;
+                valid_count = 1;
                 continue;
               }
               //Checks the validity of the current packet against the values in the most recent valid packet.
@@ -224,14 +222,14 @@ int main(int argc, char **argv) {
               }
             }
           }
-          if (!valid_packet_found) {
+          if (valid_count == 0) {
             printf("    No valid packets were found for this chunk.");
           } else {
             printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
           }
           //resets chunk parameters at the end of the chunk
           offset_current_chunk = 0;
-          valid_count = 1;
+          valid_count = 0;
         }
       }
     } else {
