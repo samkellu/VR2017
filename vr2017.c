@@ -231,11 +231,11 @@ int main(int argc, char **argv) {
               last_valid_packet[coord] = swizzled_packet[coord];
               sums[coord] += last_valid_packet[coord];
             }
-            printf("    No valid packets were found for this chunk.\n\n");
           } else {
-            printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
+            printf("    No valid packets were found for this chunk.\n\n");
           }
         }
+        printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
         //resets chunk parameters at the end of the chunk
         offset_current_chunk = 0;
         valid_count = 0;
