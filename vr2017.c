@@ -202,6 +202,7 @@ int main(int argc, char **argv) {
           printf("        Swizzle: %s\n", swizzle);
           printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzled_chunk[0],swizzled_chunk[1], swizzled_chunk[2]);
 
+          int valid_flag = 0;
           //Checks the validity of the current packet against the previous valid packet in the chunk
           for (int coord = 0; coord < 3; coord++) {
             //Sets the default most recent valid chunk in a new packet
@@ -211,19 +212,23 @@ int main(int argc, char **argv) {
               sums[coord] += last_valid_packet[coord];
               valid_count = 1;
               continue;
-            }
-            //Checks the validity of the current packet against the values in the most recent valid packet.
-            //If it is invalid, the packet is skipped, otherwise it is set to be the new most recent valid
-            //packet
-            if (abs(swizzled_chunk[coord] - last_valid_packet[coord]) > 25) {
-              printf("        Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzled_chunk[coord], coords[coord], last_valid_packet[coord], abs(last_valid_packet[coord] - swizzled_chunk[coord]));
-              break;
-            } else {
-              last_valid_packet[coord] = swizzled_chunk[coord];
-              sums[coord] += last_valid_packet[coord];
+              //Checks the validity of the current packet against the values in the most recent valid packet.
+              //If it is invalid, the packet is skipped, otherwise it is set to be the new most recent valid
+              //packet
+              if (abs(swizzled_chunk[coord] - last_valid_packet[coord]) > 25) {
+                printf("        Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzled_chunk[coord], coords[coord], last_valid_packet[coord], abs(last_valid_packet[coord] - swizzled_chunk[coord]));
+                break;
+              }
               if (coord == 2) {
+                valid_flag = 1;
                 valid_count++;
               }
+            }
+          }
+          if (valid_flag) {
+            for (int coord = 0; coord < 3; coord ++) {
+              last_valid_packet[coord] = swizzled_chunk[coord];
+              sums[coord] += last_valid_packet[coord];
             }
           }
         }
