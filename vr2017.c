@@ -86,13 +86,15 @@ int main(int argc, char **argv) {
   //stores all values in the chunk before they are processed
   int unprocessed_chunk[680] = { '\0' };
   //Stores coordinate data of the most recent valid chunk
-  int last_valid_chunk[3] = { '\0'};
+  int last_valid_packet[3] = { '\0'};
   //Stores the sum of each value for calculating the chunk averages
   int sums[3] = { 0 };
   //Stores the sum of each coordinate's values in each chunk
   int valid_count = 1;
   //Stores the names of each coordinate for display  purposes
   char coords[] = {'X', 'Y', 'Z'};
+  //flag for if there was at least one valid packet in this chunks
+  bool valid_packet_found
 
   //Reads and  processes data from the given file until an error occurs or the end of the file
   while(!feof(file)) {
@@ -100,7 +102,7 @@ int main(int argc, char **argv) {
     if (offset_current_chunk == 0) {
       memset(chunk, 0, 640*sizeof(int));
       memset(unprocessed_chunk, 0, 680*sizeof(int));
-      memset(last_valid_chunk, '\0',3*sizeof(int));
+      memset(last_valid_packet, '\0',3*sizeof(int));
     }
     //Check for the case in which the chunk is larger than the specified limit
     if (offset_current_chunk == 639) {
@@ -202,27 +204,27 @@ int main(int argc, char **argv) {
               //Sets the default most recent valid chunk in a new packet
               if (packet == 0) {
                 sums[coord] = 0;
-                last_valid_chunk[coord] = swizzled_chunk[coord];
-                sums[coord] += last_valid_chunk[coord];
+                last_valid_packet[coord] = swizzled_chunk[coord];
+                sums[coord] += last_valid_packet[coord];
+                valid_packet_found = true;
                 continue;
               }
               //Checks the validity of the current packet against the values in the most recent valid packet.
               //If it is invalid, the packet is skipped, otherwise it is set to be the new most recent valid
               //packet
-              if (abs(swizzled_chunk[coord] - last_valid_chunk[coord]) > 25) {
-                printf("        Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzled_chunk[coord], coords[coord], last_valid_chunk[coord], abs(last_valid_chunk[coord] - swizzled_chunk[coord]));
+              if (abs(swizzled_chunk[coord] - last_valid_packet[coord]) > 25) {
+                printf("        Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzled_chunk[coord], coords[coord], last_valid_packet[coord], abs(last_valid_packet[coord] - swizzled_chunk[coord]));
                 break;
               } else {
-                last_valid_chunk[coord] = swizzled_chunk[coord];
-                sums[coord] += last_valid_chunk[coord];
+                last_valid_packet[coord] = swizzled_chunk[coord];
+                sums[coord] += last_valid_packet[coord];
                 if (coord == 2) {
                   valid_count++;
                 }
               }
             }
           }
-          printf("%d,%d,%d", last_valid_chunk[0],last_valid_chunk[1],last_valid_chunk[2]);
-          if (last_valid_chunk == NULL) {
+          if (!valid_packet_found) {
             printf("    No valid packets were found for this chunk.");
           } else {
             printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
