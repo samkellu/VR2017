@@ -105,7 +105,6 @@ int main(int argc, char **argv) {
     //Reads a value into the current chunk's array
     unprocessed_chunk[offset_current_chunk] = fgetc(file);
     //Check for the case in which the chunk is larger than the specified limit
-    printf("%d\n", offset_current_chunk);
     if (offset_current_chunk == 639) {
       printf("Chunk: %d at offset: %d\n", chunk_count, offset - offset_current_chunk);
       chunk_count++;
