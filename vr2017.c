@@ -27,7 +27,10 @@ int paritySolver(int dec_value[], int size) {
 
 int main(int argc, char **argv) {
   //For the case in which an incorrect number of command line arguments have been entered.
-  if (argc != 5) {
+  if (argc > 5) {
+    printf("Error: Too many command line arguments.\n");
+    return 1;
+  } else if (argc < 5) {
     printf("Error: Not enough command line arguments.\n");
     return 1;
   }
@@ -55,11 +58,13 @@ int main(int argc, char **argv) {
     //Converts command line arguments to integers if they are of valid hexidecimal form
     if (isxdigit(argv[arg][2]) && isxdigit(argv[arg][3])) {
       dec_value[arg-2] = (int)strtol(argv[arg],NULL, 0);
-      printf("Delimiter byte %d is: %d\n", arg-2, dec_value[arg-2]);
     } else {
       //posts an error is the format is invalid
       printf("Error: Argument for delimiter byte %d is not a valid hex value\n", arg-2);
       return 1;
+    }
+    for (int byte = 0; byte < 3; byte++) {
+      printf("Delimiter byte %d is: %d\n", byte, dec_value[byte]);
     }
   }
 
@@ -100,6 +105,7 @@ int main(int argc, char **argv) {
     //Check for the case in which the chunk is larger than the specified limit
     if (offset_current_chunk == 639) {
       printf("Error: Chunk size exceeds the maximum allowable chunk size of 640 bytes.\n");
+      continue;
     }
     //Reads a value into the current chunk's array
     unprocessed_chunk[offset_current_chunk] = fgetc(file);
@@ -215,6 +221,7 @@ int main(int argc, char **argv) {
               }
             }
           }
+          printf("%d,%d,%d", last_valid_chunk[0],last_valid_chunk[1],last_valid_chunk[2]);
           if (last_valid_chunk == NULL) {
             printf("    No valid packets were found for this chunk.");
           } else {
