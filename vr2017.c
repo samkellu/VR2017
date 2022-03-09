@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
     //Reads a value into the current chunk's array
     unprocessed_chunk[offset_current_chunk] = fgetc(file);
     //Check for the case in which the chunk is larger than the specified limit
-    if (offset_current_chunk == 639) {
+    if (offset_current_chunk == 638) {
       printf("Chunk: %d at offset: %d\n", chunk_count, offset - offset_current_chunk);
       chunk_count++;
       printf("Error: Chunk size exceeds the maximum allowable chunk size of 640 bytes.\n\n");
