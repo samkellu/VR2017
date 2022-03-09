@@ -145,7 +145,6 @@ int main(int argc, char **argv) {
             chunk[packet][value] = unprocessed_chunk[offset_counter++];
           }
           printf("    Packet: %d\n", packet);
-          printf("        Data before swizzle -> B0: %d, B1: %d, B2: %d\n", chunk[packet][0], chunk[packet][1], chunk[packet][2]);
           //Stores the string representation of the swizzle order
           char *swizzle;
           //Stores the new values of the chunk after it has been swizzled
@@ -199,6 +198,7 @@ int main(int argc, char **argv) {
             printf("       Ignoring packet. Checksum was: %d instead of %d.\n", checksum, chunk[packet][4]);
             continue;
           }
+          printf("        Data before swizzle -> B0: %d, B1: %d, B2: %d\n", chunk[packet][0], chunk[packet][1], chunk[packet][2]);
           printf("        Swizzle: %s\n", swizzle);
           printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzled_chunk[0],swizzled_chunk[1], swizzled_chunk[2]);
 
