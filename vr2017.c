@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
         //Checks to see if the chunk is divisible into 5 byte packets, ignores the chunk if not and
         //processes it if it is.
         if ((offset_current_chunk - 4) % 5 != 0 && !(feof(file) && offset_current_chunk % 5 != 5)) {
-          printf("Error: Chunk must be divisible by 5 bytes.\n");
+          printf("Error: Chunk must be divisible by 5 bytes.\n\n");
           offset_current_chunk = 0;
           continue;
         }
@@ -190,17 +190,18 @@ int main(int argc, char **argv) {
                   swizzled_chunk[0] = chunk[packet][2];
                   break;
                 default:
-                  printf("Invalid Swizzle Byte. Ignoring packet.\n");
+                  printf("        Ignoring packet. Swizzle byte was: %d but can only be between 1 and 6.\n",chunk[packet][3]);
                   continue;
+          }
+          //Finds and checks the checksum of the swizzled bytes
+          int checksum = paritySolver(swizzled_chunk, 4);
+          if (checksum != chunk[packet][4]) {
+            printf("       Ignoring packet. Checksum was: %d instead of %d.\n", checksum, chunk[packet][4]);
+            continue;
           }
           printf("        Swizzle: %s\n", swizzle);
           printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzled_chunk[0],swizzled_chunk[1], swizzled_chunk[2]);
 
-          //Finds and checks the checksum of the swizzled bytes
-          if (paritySolver(swizzled_chunk, 4) != chunk[packet][4]) {
-            printf("        Parity byte does not match. Skipping packet.\n");
-            continue;
-          }
           //Checks the validity of the current packet against the previous valid packet in the chunk
           for (int coord = 0; coord < 3; coord++) {
             //Sets the default most recent valid chunk in a new packet
