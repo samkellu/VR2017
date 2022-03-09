@@ -148,59 +148,59 @@ int main(int argc, char **argv) {
           //Stores the string representation of the swizzle order
           char *swizzle;
           //Stores the new values of the chunk after it has been swizzled
-          int swizzled_chunk[4] = { '\0' };
-          swizzled_chunk[3] = chunk[packet][3];
+          int swizzled_packet[4] = { '\0' };
+          swizzled_packet[3] = chunk[packet][3];
           //Swizzles chunks as required
           switch(chunk[packet][3]) {
-                case 1:
-                  swizzle = "XYZ";
-                  swizzled_chunk[0] = chunk[packet][0];
-                  swizzled_chunk[1] = chunk[packet][1];
-                  swizzled_chunk[2] = chunk[packet][2];
-                  break;
-                case 2:
-                  swizzle = "XZY";
-                  swizzled_chunk[0] = chunk[packet][0];
-                  swizzled_chunk[2] = chunk[packet][1];
-                  swizzled_chunk[1] = chunk[packet][2];
-                  break;
-                case 3:
-                  swizzle = "YXZ";
-                  swizzled_chunk[1] = chunk[packet][0];
-                  swizzled_chunk[0] = chunk[packet][1];
-                  swizzled_chunk[2] = chunk[packet][2];
-                  break;
-                case 4:
-                  swizzle = "YZX";
-                  swizzled_chunk[1] = chunk[packet][0];
-                  swizzled_chunk[2] = chunk[packet][1];
-                  swizzled_chunk[0] = chunk[packet][2];
-                  break;
-                case 5:
-                  swizzle = "ZXY";
-                  swizzled_chunk[2] = chunk[packet][0];
-                  swizzled_chunk[0] = chunk[packet][1];
-                  swizzled_chunk[1] = chunk[packet][2];
-                  break;
-                case 6:
-                  swizzle = "ZYX";
-                  swizzled_chunk[2] = chunk[packet][0];
-                  swizzled_chunk[1] = chunk[packet][1];
-                  swizzled_chunk[0] = chunk[packet][2];
-                  break;
-                default:
-                  printf("        Ignoring packet. Swizzle byte was: %d but can only be between 1 and 6.\n",chunk[packet][3]);
-                  continue;
+            case 1:
+              swizzle = "XYZ";
+              swizzled_packet[0] = chunk[packet][0];
+              swizzled_packet[1] = chunk[packet][1];
+              swizzled_packet[2] = chunk[packet][2];
+              break;
+            case 2:
+              swizzle = "XZY";
+              swizzled_packet[0] = chunk[packet][0];
+              swizzled_packet[2] = chunk[packet][1];
+              swizzled_packet[1] = chunk[packet][2];
+              break;
+            case 3:
+              swizzle = "YXZ";
+              swizzled_packet[1] = chunk[packet][0];
+              swizzled_packet[0] = chunk[packet][1];
+              swizzled_packet[2] = chunk[packet][2];
+              break;
+            case 4:
+              swizzle = "YZX";
+              swizzled_packet[1] = chunk[packet][0];
+              swizzled_packet[2] = chunk[packet][1];
+              swizzled_packet[0] = chunk[packet][2];
+              break;
+            case 5:
+              swizzle = "ZXY";
+              swizzled_packet[2] = chunk[packet][0];
+              swizzled_packet[0] = chunk[packet][1];
+              swizzled_packet[1] = chunk[packet][2];
+              break;
+            case 6:
+              swizzle = "ZYX";
+              swizzled_packet[2] = chunk[packet][0];
+              swizzled_packet[1] = chunk[packet][1];
+              swizzled_packet[0] = chunk[packet][2];
+              break;
+            default:
+              printf("        Ignoring packet. Swizzle byte was: %d but can only be between 1 and 6.\n",chunk[packet][3]);
+              continue;
           }
           //Finds and checks the checksum of the swizzled bytes
-          int checksum = paritySolver(swizzled_chunk, 4);
+          int checksum = paritySolver(swizzled_packet, 4);
           if (checksum != chunk[packet][4]) {
             printf("        Ignoring packet. Checksum was: %d instead of %d.\n", checksum, chunk[packet][4]);
             continue;
           }
           printf("        Data before swizzle -> B0: %d, B1: %d, B2: %d\n", chunk[packet][0], chunk[packet][1], chunk[packet][2]);
           printf("        Swizzle: %s\n", swizzle);
-          printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzled_chunk[0],swizzled_chunk[1], swizzled_chunk[2]);
+          printf("        Data after swizzle -> X: %d, Y: %d, Z: %d\n", swizzled_packet[0],swizzled_packet[1], swizzled_packet[2]);
 
           int valid_flag = 0;
           //Checks the validity of the current packet against the previous valid packet in the chunk
@@ -208,15 +208,16 @@ int main(int argc, char **argv) {
             //Sets the default most recent valid chunk in a new packet
             if (packet == 0) {
               sums[coord] = 0;
-              last_valid_packet[coord] = swizzled_chunk[coord];
+              last_valid_packet[coord] = swizzled_packet[coord];
               sums[coord] += last_valid_packet[coord];
               valid_count = 1;
               continue;
               //Checks the validity of the current packet against the values in the most recent valid packet.
               //If it is invalid, the packet is skipped, otherwise it is set to be the new most recent valid
               //packet
-              if (abs(swizzled_chunk[coord] - last_valid_packet[coord]) > 25) {
-                printf("        Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzled_chunk[coord], coords[coord], last_valid_packet[coord], abs(last_valid_packet[coord] - swizzled_chunk[coord]));
+              printf("%d, %d", last_valid_packet[coord], swizzled_packet[coord]);
+              if (abs(swizzled_packet[coord] - last_valid_packet[coord]) > 25) {
+                printf("        Ignoring packet. %c: %d. Previous valid packet's %c: %d. %d > 25.\n", coords[coord], swizzled_packet[coord], coords[coord], last_valid_packet[coord], abs(last_valid_packet[coord] - swizzled_packet[coord]));
                 break;
               }
               if (coord == 2) {
@@ -227,16 +228,13 @@ int main(int argc, char **argv) {
           }
           if (valid_flag) {
             for (int coord = 0; coord < 3; coord ++) {
-              last_valid_packet[coord] = swizzled_chunk[coord];
+              last_valid_packet[coord] = swizzled_packet[coord];
               sums[coord] += last_valid_packet[coord];
             }
+            printf("    No valid packets were found for this chunk.\n\n");
+          } else {
+            printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
           }
-        }
-        if (valid_count == 0) {
-          printf("    No valid packets were found for this chunk.\n\n");
-        } else {
-          printf("    Chunk Average X: %.2f, Average Y: %.2f, Average Z: %.2f\n\n", (double)sums[0]/(double)valid_count,(double)sums[1]/(double)valid_count, (double)sums[2]/(double)valid_count);
-        }
         //resets chunk parameters at the end of the chunk
         offset_current_chunk = 0;
         valid_count = 0;
