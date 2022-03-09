@@ -63,9 +63,9 @@ int main(int argc, char **argv) {
       printf("Error: Argument for delimiter byte %d is not a valid hex value\n", arg-2);
       return 1;
     }
-    for (int byte = 0; byte < 3; byte++) {
-      printf("Delimiter byte %d is: %d\n", byte, dec_value[byte]);
-    }
+  }
+  for (int byte = 0; byte < 3; byte++) {
+    printf("Delimiter byte %d is: %d\n", byte, dec_value[byte]);
   }
 
   //Calculating the checksum
