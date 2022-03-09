@@ -195,7 +195,7 @@ int main(int argc, char **argv) {
           //Finds and checks the checksum of the swizzled bytes
           int checksum = paritySolver(swizzled_chunk, 4);
           if (checksum != chunk[packet][4]) {
-            printf("       Ignoring packet. Checksum was: %d instead of %d.\n", checksum, chunk[packet][4]);
+            printf("        Ignoring packet. Checksum was: %d instead of %d.\n", checksum, chunk[packet][4]);
             continue;
           }
           printf("        Data before swizzle -> B0: %d, B1: %d, B2: %d\n", chunk[packet][0], chunk[packet][1], chunk[packet][2]);
