@@ -245,6 +245,7 @@ int main(int argc, char **argv) {
       delimiter_count = 0;
     }
   }
+  //Close the file and end the program
   fclose(file);
   return 0;
 }
