@@ -7,7 +7,7 @@
 #include <ctype.h>
 
 //Calculates the checksum of an array of numbers
-int paritySolver(int dec_value[], int size) {
+int parity_solver(int dec_value[], int size) {
   int checksum = 0;
   //Counts the number of (1) bits in each column of the set of numbers with a
   //bit mask, then finds if there is an odd or even number of each. In the output
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
   }
 
   //Calculating the checksum
-  int checksum = paritySolver(dec_value, 3);
+  int checksum = parity_solver(dec_value, 3);
   printf("Checksum is: %d\n\n", checksum);
   //Defining the delimiter values
   int delimiter[] = {dec_value[0], dec_value[1], dec_value[2], checksum};
@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
               continue;
           }
           //Finds and checks the checksum of the swizzled bytes
-          int checksum = paritySolver(swizzled_packet, 4);
+          int checksum = parity_solver(swizzled_packet, 4);
           if (checksum != chunk[packet][4]) {
             printf("        Ignoring packet. Checksum was: %d instead of %d.\n", checksum, chunk[packet][4]);
             continue;
