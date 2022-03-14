@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
         chunk_count++;
         //Checks to see if the chunk is divisible into 5 byte packets, ignores the chunk if not and
         //processes it if it is.
-        if ((offset_current_chunk - 4) % 5 != 0 && !(feof(file)) {
+        if ((offset_current_chunk - 4) % 5 != 0 && !(feof(file))) {
           printf("Error: Chunk must be divisible by 5 bytes.\n\n");
           offset_current_chunk = 0;
           continue;
