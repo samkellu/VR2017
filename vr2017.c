@@ -127,14 +127,14 @@ int main(int argc, char **argv) {
     //Checks if the value is the correct part of the delimiter
     if (unprocessed_chunk[offset_current_chunk-1] == delimiter[delimiter_count] || feof(file)) {
       //Begins a new chunk if the delimiter is completed
-	    if (delimiter_count++ == 3 || feof(file)) {
+      if (delimiter_count++ == 3 || feof(file)) {
         delimiter_count = 0;
         int offset_counter = 0;
         printf("Chunk: %d at offset: %d\n", chunk_count, offset - offset_current_chunk);
         chunk_count++;
         //Checks to see if the chunk is divisible into 5 byte packets, ignores the chunk if not and
         //processes it if it is.
-        if ((offset_current_chunk - 4) % 5 != 0 && !(feof(file) && offset_current_chunk % 5 != 5)) {
+        if ((offset_current_chunk - 4) % 5 != 0 && !(feof(file)) {
           printf("Error: Chunk must be divisible by 5 bytes.\n\n");
           offset_current_chunk = 0;
           continue;
